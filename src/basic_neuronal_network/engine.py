@@ -6,7 +6,7 @@ class Value:
         self.data = data
         self.grad = 0.0
         self._prev = _prev
-        self._operation = _operation
+        self._operation = _operation  # Just relevant for debugging not for prod
         self._backprop = _backprop
 
     def __add__(self, other):
