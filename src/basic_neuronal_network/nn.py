@@ -47,6 +47,10 @@ class MLP:
     def parameters(self):
         return [p for l in self.layers for p in l.parameters()]
 
+    def reset_grad(self):
+        for p in self.parameters():
+            p.grad = 0.0
+
 
 if __name__ == "__main__":
     n = Neuron(3)
