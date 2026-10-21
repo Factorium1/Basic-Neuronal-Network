@@ -9,7 +9,7 @@ In `engine.py` lives the engine with the learning algo and the definition of a N
 
 ## Basic usage
 
-Adapt the inputs in `__main__` in the var x and redifine the target Values in var target.
+Adapt the inputs in `__main__` in the var x and redefine the target Values in var target.
 If needed change the layout of the Network via the mlp var.
 
 Run: `uv run src/basic_neuronal_network/nn.py`
