@@ -40,7 +40,7 @@ class MLP:
         out = []
         for layer in self.layers:
             out = layer(inputs)
-            inputs = out
+            inputs = [o.tanh() for o in out]
 
         return out
 
@@ -51,24 +51,48 @@ class MLP:
         for p in self.parameters():
             p.grad = 0.0
 
+    def update(self, learning_rate):
+        for p in self.parameters():
+            p.data = p.data - learning_rate * p.grad
+
 
 if __name__ == "__main__":
-    n = Neuron(3)
-    x = [Value(2.0), Value(3.0), Value(-1.0)]
+    x = [
+        [Value(2.0), Value(3.0), Value(-1.0)],
+        [Value(-2.0), Value(13.0), Value(2.0)],
+        [Value(-4.0), Value(-20.0), Value(5.0)],
+    ]
 
-    out = n(x)
-    print(out.data)
-    print([p.data for p in n.parameters()])
-
-    layer = Layer(3, 4)
-    outputs = layer(x)
-
-    print([out.data for out in outputs])
-    print(len(layer.parameters()))
+    target = [Value(1.0), Value(-1.0), Value(15)]
 
     mlp = MLP([3, 4, 4, 1])
-    outputs = mlp(x)
 
-    print([out.data for out in outputs])
+    prediction = [mlp(v)[0] for v in x]
 
-    print(len(mlp.parameters()))
+    loss = sum(
+        [(tar - pred) * (tar - pred) for tar, pred in zip(target, prediction)],
+        Value(0.0),
+    )
+
+    mlp.reset_grad()
+
+    loss.backward()
+
+    print("Loss vorher:", loss.data)
+
+    for i in range(16000):
+        prediction = [mlp(v)[0] for v in x]
+        print(f"Prediction {i}:", [p.data for p in prediction])
+        loss = sum(
+            [(tar - pred) * (tar - pred) for tar, pred in zip(target, prediction)],
+            Value(0.0),
+        )
+
+        mlp.reset_grad()
+        loss.backward()
+        mlp.update(0.0001)
+
+        print("Loss:", loss.data)
+
+        if round(loss.data, 2) == 0:
+            break
