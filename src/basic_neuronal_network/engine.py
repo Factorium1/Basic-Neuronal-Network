@@ -33,18 +33,32 @@ class Value:
         out = Value(self.data * other.data, (self, other), "*", _backprop)
         return out
 
+    def build_topological_order(self):
+        topological_order = []
+        visited = set()
+
+        def build(curr):
+            if curr in visited:
+                return
+
+            visited.add(curr)
+
+            for prev in curr._prev:
+                build(prev)
+
+            topological_order.append(curr)
+
+        build(self)
+        return topological_order
+
 
 if __name__ == "__main__":
     a = Value(2)
     b = Value(3)
     c = a + b
     d = Value(7)
-    e = d * a
-    # print(c.data)
-    # print([x.data for x in c._prev])
+    e = d * c
+
     e.grad = 1.0
     e.backprop()
-    # print(e.grad)
-    # print(a.grad)
-    print(b.grad)
-    print(c.grad)
+    print([v.data for v in e.build_topological_order()])
