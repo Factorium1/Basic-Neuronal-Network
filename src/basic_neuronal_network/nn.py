@@ -29,6 +29,25 @@ class Layer:
         return [p for n in self.neurons for p in n.parameters()]
 
 
+class MLP:
+    def __init__(self, layer_output_amount):
+        self.layers = [
+            Layer(layer_output_amount[i], layer_output_amount[i + 1])
+            for i in range(len(layer_output_amount) - 1)
+        ]
+
+    def __call__(self, inputs):
+        out = []
+        for layer in self.layers:
+            out = layer(inputs)
+            inputs = out
+
+        return out
+
+    def parameters(self):
+        return [p for l in self.layers for p in l.parameters()]
+
+
 if __name__ == "__main__":
     n = Neuron(3)
     x = [Value(2.0), Value(3.0), Value(-1.0)]
@@ -42,3 +61,10 @@ if __name__ == "__main__":
 
     print([out.data for out in outputs])
     print(len(layer.parameters()))
+
+    mlp = MLP([3, 4, 4, 1])
+    outputs = mlp(x)
+
+    print([out.data for out in outputs])
+
+    print(len(mlp.parameters()))
