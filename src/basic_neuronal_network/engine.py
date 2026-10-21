@@ -1,3 +1,6 @@
+import math
+
+
 class Value:
     def __init__(self, data, _prev=(), _operation=(), _backprop=lambda: None) -> None:
         self.data = data
@@ -48,6 +51,14 @@ class Value:
     def __rmul__(self, other):
         return self * other
 
+    def tanh(self):
+
+        def _backprop():
+            self.grad += (1 - out.data**2) * out.grad
+
+        out = Value(math.tanh(self.data), (self,), "tanh", _backprop)
+        return out
+
     def build_topological_order(self):
         topological_order = []
         visited = set()
@@ -75,14 +86,9 @@ class Value:
 
 
 if __name__ == "__main__":
-    a = Value(2)
-    b = Value(3)
-    c = a * 3
-    d = c + a
+    a = Value(0.5)
+    b = a.tanh()
+    b.backward()
 
-    d.backward()
-
-    print(a.grad)  # 4.0
-    print(b.grad)  # 2.0
-    print(c.grad)  # 1.0
-    print(d.grad)  # 1.0
+    print(b.data)
+    print(a.grad)
