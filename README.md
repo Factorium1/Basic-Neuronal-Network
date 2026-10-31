@@ -1,15 +1,25 @@
 # Basic Neuronal Network
 
-~Inspired by micrograd
+A playground for practicing different neural network implementations.
+Each exercise lives in its own numbered folder and can be run on its own.
 
-A basic Neuronal Network just for practice purposes
+## Exercises
 
-In `nn.py` are the fundamentals for each Value of the Network.
-In `engine.py` lives the engine with the learning algo and the definition of a Neuron, Layer and MLP.
+| Folder | Description |
+| --- | --- |
+| [`01-micrograd-mlp`](01-micrograd-mlp/) | Scalar autograd engine and MLP, inspired by micrograd |
 
-## Basic usage
+## Usage
 
-Adapt the inputs in `__main__` in the var x and redefine the target Values in var target.
-If needed change the layout of the Network via the mlp var.
+All exercises share the dependencies in the root `pyproject.toml`.
+Add new ones with `uv add <package>`.
 
-Run: `uv run src/basic_neuronal_network/nn.py`
+Run an exercise from the repo root, e.g.:
+
+`uv run 01-micrograd-mlp/nn.py`
+
+## Adding a new exercise
+
+1. Create a new folder with the next number, e.g. `02-numpy-mlp/`
+2. Add a short `README.md` inside it
+3. Add it to the table above
