@@ -41,10 +41,10 @@ embd_dim = 10  # dimension of embedding vektor
 hidden_dim = 200  # hidden layer dimension
 
 C = torch.randn((alphabet_size, embd_dim))
-W1 = torch.randn((embd_dim * block_size, hidden_dim))
-b1 = torch.randn(hidden_dim)
-W2 = torch.randn((hidden_dim, alphabet_size))
-b2 = torch.randn(alphabet_size)
+W1 = torch.randn((embd_dim * block_size, hidden_dim)) / (embd_dim * block_size) ** 0.5
+b1 = torch.zeros(hidden_dim)
+W2 = torch.randn((hidden_dim, alphabet_size)) * 0.01
+b2 = torch.zeros(alphabet_size)
 
 params = [C, W1, W2, b1, b2]
 for p in params:
