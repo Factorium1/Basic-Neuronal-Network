@@ -25,7 +25,7 @@ def build_dataset(words):
 
     for w in words:
         context = [0] * block_size
-        for ch in w:
+        for ch in w + ".":
             ix = stoi[ch]
             X.append(context)
             Y.append(ix)
@@ -51,9 +51,22 @@ for p in params:
     p.requires_grad = True
 
 # work
-max_steps = 2000
+max_steps = 20_000
 batch_size = 32
 learning_rate = 0.1
+
+
+def forward_pass(in_batch):
+    # Forward-Pass
+    # to embedding vektor
+    input_batch = C[in_batch]
+    in_embcat = input_batch.view(
+        input_batch.shape[0], -1
+    )  # shape from e.g.[32,3,10] -> [32, 30]
+    N1_out = torch.tanh(in_embcat @ W1 + b1)
+    N2_out = N1_out @ W2 + b2
+    return N2_out
+
 
 def main():
     X, Y = build_dataset(words)
@@ -63,13 +76,9 @@ def main():
         in_batch = X[ix]
         out_batch = Y[ix]
 
-        # Forward-Pass
-        # to embedding vektor
-        input_batch = C[in_batch]
-        in_embcat = input_batch.view(input_batch.shape[0], -1)
-        N1_out = torch.tanh(in_embcat @ W1 + b1)
-        N2_out = N1_out @ W2 + b2
-        loss = F.cross_entropy(N2_out, out_batch)
+        logits = forward_pass(in_batch)
+        loss = F.cross_entropy(logits, out_batch)
+
         if i % 100 == 0:
             print(f"Durchlauf: {i:5d} --- Loss:{loss.item():.4f}")
 
@@ -86,4 +95,19 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
+    out = ["" for _ in range(10)]
+    with torch.no_grad():
+        for i in range(10):
+            context = [0] * block_size
+            while True:
+                logits = forward_pass(torch.tensor([context]))
+                wsh = F.softmax(logits, -1)
+                next_index = int(torch.multinomial(wsh, 1).item())
+                if next_index == 0:
+                    break
+                out[i] += itos[next_index]
+                context = context[1:] + [next_index]
+
+    for o in out:
+        print(o)
